@@ -1,2 +1,9 @@
-# ISA 401: Business Intelligence & Data Visualization, Nick Begany, Semester: Fall 2026, Phase I: Data Acquisition & Transformation, Phase II: Data Visualization & Communication, Phase III: Exploratory Data Mining
-Initial commit: Add README
+# ISA 401: Business Intelligence & Data Visualization
+Nick Begany, Semester: Fall 2026,
+Phase I: Data Acquisition & Transformation,
+Phase II: Data Visualization & Communication,
+Phase III: Exploratory Data Mining
+
+## Skills 
+- Git
+- R
