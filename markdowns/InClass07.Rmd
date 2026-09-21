@@ -1,0 +1,133 @@
+---
+title: "In Class 07"
+author: "Nick Begany"
+date: "2026-09-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r answer_to}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+ 
+jobs = postings |>
+  dplyr::select(company, title, location_state, remote, category, posted_at, last_seen_at) |>
+  dplyr::filter(remote == 1) |>
+  dplyr::mutate( 
+    posted_at = as.Date(posted_at),
+    last_seen_at = as.Date(last_seen_at), 
+    days_open = as.numeric(last_seen_at - posted_at)
+    )
+jobs
+```
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+ 
+jobs = postings |>
+  dplyr::select(company, title, location_state, remote, category, posted_at, last_seen_at) |>
+  dplyr::filter(remote == 1) |>
+  dplyr::mutate( 
+    posted_at = as.Date(posted_at),
+    last_seen_at = as.Date(last_seen_at), 
+    days_open = as.numeric(last_seen_at - posted_at)
+    )
+jobs
+
+#Q1 -- which cat is remote friendly
+# To answer that, the logic would be as follow
+# - Find the number of jobs per category
+# - Normalize the number of remote jobs by dividing by the total jobs 
+```
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+ 
+jobs = postings |>
+  dplyr::select(company, title, location_state, remote, category, posted_at, last_seen_at) |>
+  dplyr::mutate(dplyr::across(dplyr::ends_with("_at"), as.Date),
+                days_open = as.numeric(last_seen_at - posted_at))
+jobs
+```
+
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/scout.db")
+postings = DBI::dbReadTable(con, "scout_postings") |> tibble::as_tibble()
+DBI::dbDisconnect(con)
+ 
+jobs |>
+  dplyr::group_by(category) |>
+  dplyr::summarise(
+    postings = dplyr::n(),
+    remote_sahre = mean(remote)
+  )
+
+jobs |>
+  dplyr::group_by(category, location_state) |>
+  dplyr::summarise(
+    postings = dplyr::n(),
+    remote_share = mean(remote) |> round(digits = 2)
+  ) |>
+  dplyr::arrange(dplyr::desc(remote_share)) |>
+  na.omit()
+  
+
+```
+
+
+```{r}
+con = DBI::dbConnect(RSQLite::SQLite(), "../data/midwest_airbnb.db")
+listings = DBI::dbReadTable(con, "listings") |>
+  tibble::as_tibble()
+DBI::dbDisconnect(con)
+dplyr::glimpse(listings)
+
+# number of listings per city
+listings |> dplyr::group_by(city) |> dplyr::summarise(count = dplyr::n())
+# shortcut
+listings |> dplyr::count(city) # count does group by and then n()
+
+# the other option is to simply count the number of times each city occured in the col city
+table(listings$city) # returns a named vector vs above we get a data.frame/tibble
+```
+
+```{r}
+# For entire homes (room_type == "Entire home/apt") that sleep four or more, what is the median price in each city?
+listings |>
+  dplyr::filter(
+    room_type == "Entire home/apt" & accommodates >= 4
+  ) |> 
+  dplyr::group_by(city) |> 
+  dplyr::summarise(
+    median_price = median(price)
+  )
+```
+
+```{r}
+# Add price_per_person = price / accommodates. Which three listings are cheapest per person? Believe them?
+listings |> 
+  dplyr::mutate(price_per_person = price / accommodates) |> 
+  dplyr::select(city, host_name, name, price, accommodates, price_per_person) |> 
+  dplyr::arrange(price_per_person) |> 
+  head(3)
+```
+
+```{r}
+# Which five host_names have the most listings? [FYI -- host names are not unique]
+
+listings |> 
+  dplyr::count(host_name, sort = T)
+listings |> 
+  dplyr::count(host_name, host_id, sort = T)
+
+```
+
