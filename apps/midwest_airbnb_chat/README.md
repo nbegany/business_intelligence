@@ -13,9 +13,12 @@ A twelve-line [querychat](https://github.com/posit-dev/querychat) app built in I
 The app connects to a SQLite database (`data/scout.db`), hands the `scout_postings` table to querychat, and lets an LLM translate your question into SQL. Every answer shows the query it ran, so you can check the logic and reuse the SQL yourself.
 
 **Example queries:**
-- "How many of the postings are remote?"
-- "Which ten companies have the most postings?"
-- "Show the internship postings in Ohio."
+- "Which Columbus neighbourhood has the priciest entire homes?
+- [Priciest Neighbourhood in Columbus](screenshots/question1.png)
+- "How many listings could host a party of 10?
+- [Listings for parties of 10](screenshots/question2.png)
+- "What is the average nightly price for each city?"
+- [Avg nightly price by city](screenshots/question3.png)
 
 ---
 
