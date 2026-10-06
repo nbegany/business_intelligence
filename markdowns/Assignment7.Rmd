@@ -1,0 +1,95 @@
+---
+title: "Assignment 7"
+author: "Nick Begany"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r departments}
+dept = c('Accountancy', 'Economics', 'Entrepreneurship', 'Finance', 
+         'Information%20Systems%20--%20Analytics', 'Marketing', 'Management')
+
+departments = c()
+
+for (name in dept) {
+
+  bulletin_url = paste0('https://miamioh.edu/fsb/directory/?up=/query/all/all/', name,'/all')
+  
+  webpage = rvest::read_html(bulletin_url)
+  
+  webpage |>
+    rvest::html_elements("td:first-child") |> 
+    rvest::html_text2() -> fac_dept
+  
+  departments = c(departments, fac_dept)
+}
+```
+
+```{r names}
+names = c()
+
+for (name in dept) {
+
+  bulletin_url = paste0('https://miamioh.edu/fsb/directory/?up=/query/all/all/', name,'/all')
+  
+  webpage = rvest::read_html(bulletin_url)
+  
+  webpage |> 
+    rvest::html_elements("td:nth-child(3) strong") |> 
+    rvest::html_text2() -> fac_name
+  
+  names = c(names, fac_name)
+}
+```
+
+```{r positions}
+positions = c()
+
+for (name in dept) {
+
+  bulletin_url = paste0('https://miamioh.edu/fsb/directory/?up=/query/all/all/', name, '/all')
+  
+  webpage = rvest::read_html(bulletin_url)
+  
+  webpage |> 
+    rvest::html_elements("i") |> 
+    rvest::html_text2() |>
+    stringr::str_squish() -> fac_pos
+
+  positions = c(positions, fac_pos)
+}
+```
+
+```{r websites}
+websites = c()
+
+for (name in dept) {
+
+  bulletin_url = paste0('https://miamioh.edu/fsb/directory/?up=/query/all/all/', name, '/all')
+  
+  webpage = rvest::read_html(bulletin_url)
+  
+  webpage |> 
+    rvest::html_elements("strong a") |> 
+    rvest::html_attr("href") -> fac_web
+  
+  websites = c(websites, fac_web)
+}
+```
+
+```{r data frame}
+faculty_df = data.frame(
+  Department = departments,
+  Name = names,
+  Position = positions,
+  Website = websites
+)
+
+head(faculty_df)
+```
+
